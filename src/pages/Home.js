@@ -7,6 +7,7 @@ import Sobre from '../components/Sobre'
 import Contato from '../components/Contato'
 import BackToTop from '../components/BackToTop'
 import Maps from '../components/Maps'
+import Feedback from '../components/Feedback'
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <BackToTop/>
       <Servicos/>
       <Trabalhos/>
+      <Feedback/>
       <Contato/>
 
       {/* <ImageCarousel/> */}

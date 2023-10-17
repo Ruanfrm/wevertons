@@ -25,6 +25,8 @@ function Navbar() {
           <li><a href="#trabalhos">Trabalhos</a></li>
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#contato">Contato</a></li>
+          <li><a href="#feedback">Avaliações</a></li>
+
         </ul>
       </div>
       <div className="navbar-toggle" onClick={toggleNavbar}>
