@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { addDoc, collection } from 'firebase/firestore';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import { db, auth } from '../services/conectionfirebase';
+import React, { useState } from "react";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { set, ref } from "firebase/database";
+import { db, auth } from "../services/conectionfirebase";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
-const UserModal = ({ open, onClose, updateUser }) => {
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import TextField from "@mui/material/TextField";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const UserModal = ({ open, onClose, onAddUser }) => {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('');
   const [email, setEmail] = useState('');
@@ -46,6 +48,7 @@ const UserModal = ({ open, onClose, updateUser }) => {
 
   const handleAddUser = async () => {
     if (name.trim() === '' || email.trim() === '' || password.trim() === '') {
+      // Mostrar alerta se algum campo estiver vazio
       handleShowEmptyFieldsAlert();
       return;
     }
@@ -53,7 +56,7 @@ const UserModal = ({ open, onClose, updateUser }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid;
-      const userRef = collection(db, 'users');
+      const userRef = collection(db, "users");
       const userData = {
         name,
         avatar,
@@ -61,15 +64,19 @@ const UserModal = ({ open, onClose, updateUser }) => {
       };
       await addDoc(userRef, { ...userData, userId });
 
+      // Limpe os campos
       setName('');
       setAvatar('');
       setEmail('');
       setPassword('');
       onClose();
-      updateUser(userData);
+
+      // Mostrar alerta de sucesso
       handleShowSuccessAlert();
     } catch (error) {
-      console.error('Erro ao criar usuário:', error);
+      console.error("Erro ao criar usuário:", error);
+
+      // Mostrar alerta de erro
       handleShowErrorAlert();
     }
   };
