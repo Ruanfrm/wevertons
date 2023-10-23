@@ -24,7 +24,9 @@ export default function Home() {
       <Trabalhos/>
       <Feedback/>
       <Contato/>
+      <Maps/>
       <Footer/>
+
 
       {/* <ImageCarousel/> */}
 

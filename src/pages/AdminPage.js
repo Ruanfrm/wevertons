@@ -5,6 +5,9 @@ import { getAuth } from "firebase/auth";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import SaveIcon from "@mui/icons-material/Save";
 import BackupIcon from "@mui/icons-material/Backup";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import SelectAllIcon from '@mui/icons-material/SelectAll';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {
   getStorage,
   ref as storageRef,
@@ -32,7 +35,8 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import UserModal from '../components/UserModal'; // Importe o componente UserModal
+import UserModal from "../components/UserModal";
+import LogoutButton from "../components/LogoutButton";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
@@ -43,25 +47,29 @@ const firebaseConfig = {
   messagingSenderId: "173010671308",
   appId: "1:173010671308:web:15fd5e2dea8851860a9469"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
 function AdminPage() {
-  const [mission, setMission] = useState('');
-  const [values, setValues] = useState('');
-  const [image, setImage] = useState(null);
+  const [mission, setMission] = useState("");
+  const [values, setValues] = useState("");
+  const [images, setImages] = useState([]); // Use an array to store selected images
   const [uploadStatus, setUploadStatus] = useState(null);
   const [imageList, setImageList] = useState([]);
   const [deleteImage, setDeleteImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewURL, setPreviewURL] = useState(null);
+  const [selectAll, setSelectAll] = useState(false);
+  const [showDeleteButton, setShowDeleteButton] = useState(false); // State to show/hide delete button
+  const [selectedCount, setSelectedCount] = useState(0); // State to track selected image count
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
 
-  // Adicione estados para controlar o modal de usuário
+  const [user, setUser] = useState(null);
   const [openUserModal, setOpenUserModal] = useState(false);
 
   const navigate = useNavigate();
@@ -83,6 +91,13 @@ function AdminPage() {
     loadImagesFromStorage();
   }, [navigate]);
 
+  useEffect(() => {
+    // Update the selected image count
+    setSelectedCount(images.length);
+    // Show delete button if there are selected images
+    setShowDeleteButton(images.length > 0);
+  }, [images]);
+
   const loadImagesFromStorage = () => {
     const imageListRef = storageRef(storage, "imagens/barber");
     listAll(imageListRef)
@@ -100,29 +115,50 @@ function AdminPage() {
   };
 
   const handleUpload = () => {
-    if (image) {
-      const categoria = "barber";
-      const imageRef = storageRef(storage, `imagens/${categoria}/${image.name}`);
-      const uploadTask = uploadBytesResumable(imageRef, image);
+    if (images.length === 0) {
+      setUploadStatus("Selecione pelo menos uma imagem para enviar.");
+      setOpenUploadDialog(true);
+      return;
+    }
+
+    const categoria = "barber";
+    const uploadPromises = images.map((selectedImage) => {
+      const imageRef = storageRef(storage, `imagens/${categoria}/${selectedImage.name}`);
+      return uploadImage(imageRef, selectedImage);
+    });
+
+    Promise.all(uploadPromises)
+      .then(() => {
+        setImages([]); // Clear the selected images
+        setPreviewURL(null);
+        setUploadStatus("Upload concluído com sucesso.");
+        setOpenUploadDialog(true);
+        loadImagesFromStorage();
+      })
+      .catch((error) => {
+        console.error("Erro ao fazer upload das imagens:", error);
+        setUploadStatus("Erro ao fazer upload das imagens.");
+        setOpenUploadDialog(true);
+      });
+  };
+
+  const uploadImage = (imageRef, selectedImage) => {
+    return new Promise((resolve, reject) => {
+      const uploadTask = uploadBytesResumable(imageRef, selectedImage);
 
       uploadTask.on(
         "state_changed",
         null,
         (error) => {
-          console.error("Erro ao fazer o upload:", error);
-          setUploadStatus("Erro ao fazer o upload da imagem.");
-          setOpenUploadDialog(true);
+          console.error("Erro ao fazer upload:", error);
+          reject(error);
         },
         () => {
           console.log("Upload concluído com sucesso.");
-          setImage(null);
-          setPreviewURL(null);
-          setUploadStatus("Upload concluído com sucesso.");
-          setOpenUploadDialog(true);
-          loadImagesFromStorage();
+          resolve();
         }
       );
-    }
+    });
   };
 
   const handleDeleteImage = (image) => {
@@ -160,31 +196,80 @@ function AdminPage() {
   };
 
   const handleImageChange = (e) => {
-    const selectedImage = e.target.files[0];
-    setImage(selectedImage);
+    const selectedImages = e.target.files;
+    const imageArray = Array.from(selectedImages); // Convert FileList to an array
+    setImages(imageArray); // Store selected images in state
 
-    if (selectedImage) {
+    if (imageArray.length > 0) {
       const reader = new FileReader();
       reader.onload = (event) => {
         setPreviewURL(event.target.result);
       };
-      reader.readAsDataURL(selectedImage);
+      reader.readAsDataURL(imageArray[0]); // Display the first selected image
     } else {
       setPreviewURL(null);
     }
   };
 
+  const toggleSelectImage = (image) => {
+    const imageIndex = images.findIndex((selectedImage) => selectedImage.url === image.url);
+
+    if (imageIndex === -1) {
+      setImages([...images, image]);
+    } else {
+      const newImages = [...images];
+      newImages.splice(imageIndex, 1);
+      setImages(newImages);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setImages([]);
+    } else {
+      setImages([...imageList]);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const deleteSelectedImages = () => {
+    const deletePromises = images.map((selectedImage) => {
+      return deleteObject(selectedImage.ref);
+    });
+
+    Promise.all(deletePromises)
+      .then(() => {
+        loadImagesFromStorage();
+        setImages([]);
+      })
+      .catch((error) => {
+        console.error("Erro ao excluir as imagens selecionadas: ", error);
+      });
+  };
+
   return (
     <Container>
-      {/* Botão para abrir o modal de usuário */}
-      <Button variant="contained" color="primary" onClick={() => setOpenUserModal(true)}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setOpenUserModal(true)}
+        style={{ margin: "30px 10px" }}
+      >
         Adicionar Usuário
+        <PersonAddIcon style={{ marginLeft: "10px" }} />
       </Button>
-
-      {/* Renderize o modal de usuário */}
+      <LogoutButton />
       <UserModal open={openUserModal} onClose={() => setOpenUserModal(false)} />
-
-      <Typography variant="h4" align="center" gutterBottom style={{ marginTop: '30px', marginBottom: '20px', fontWeight: 'bold' }}>
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        style={{
+          marginTop: "30px",
+          marginBottom: "20px",
+          fontWeight: "bold",
+        }}
+      >
         Página de administração
       </Typography>
       <Grid container spacing={3}>
@@ -194,16 +279,34 @@ function AdminPage() {
               <Typography variant="h6" gutterBottom>
                 Missão
               </Typography>
-              <TextField label="Missão" fullWidth value={mission} onChange={(e) => setMission(e.target.value)} variant="filled" multiline />
+              <TextField
+                label="Missão"
+                fullWidth
+                value={mission}
+                onChange={(e) => setMission(e.target.value)}
+                variant="filled"
+                multiline
+              />
               <Typography variant="h6" gutterBottom>
                 Valores
               </Typography>
-              <TextField label="Valores" fullWidth value={values} onChange={(e) => setValues(e.target.value)} variant="filled" multiline />
+              <TextField
+                label="Valores"
+                fullWidth
+                value={values}
+                onChange={(e) => setValues(e.target.value)}
+                variant="filled"
+                multiline
+              />
             </CardContent>
             <CardActions>
               <Tooltip title="Salvar Alteração">
-                <Button variant="contained" color="primary" onClick={handleSaveChanges}>
-                  Salvar Alterações <SaveIcon style={{ marginLeft: '5px' }} />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveChanges}
+                >
+                  Salvar Alterações <SaveIcon style={{ marginLeft: "5px" }} />
                 </Button>
               </Tooltip>
             </CardActions>
@@ -215,16 +318,35 @@ function AdminPage() {
               <Typography variant="h6" gutterBottom>
                 Upload de Imagem
               </Typography>
-              <input type="file" accept="image/*" onChange={handleImageChange} style={{ marginBottom: '20px' }} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ marginBottom: "20px" }}
+                multiple
+              />
               <br />
-              <img src={previewURL} alt="Pré-visualização da imagem" style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }} />
+              <img
+                src={previewURL}
+                alt="Pré-visualização da imagem"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "200px",
+                  objectFit: "cover",
+                }}
+              />
               <br />
               <Tooltip title="Enviar imagem para o site">
-                <Button variant="contained" color="primary" onClick={handleUpload} style={{ marginTop: '20px' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpload}
+                  style={{ marginTop: "20px" }}
+                >
                   Enviar Imagem <SendIcon style={{ margin: "0px 5px" }} />
                 </Button>
               </Tooltip>
-              {image && (
+              {images.length > 0 && (
                 <Typography variant="body2" color="error">
                   {uploadStatus}
                 </Typography>
@@ -239,23 +361,75 @@ function AdminPage() {
       <Grid container spacing={3}>
         {imageList.map((img, index) => (
           <Grid item xs={12} sm={2} key={index}>
-            <Card>
+            <Card
+              className={`image-card ${
+                images.some((selectedImage) => selectedImage.url === img.url)
+                  ? "selected"
+                  : ""
+              }`}
+            >
               <CardContent>
-                <img src={img.url} alt={`Imagem ${index}`} style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }} />
+                <img
+                  src={img.url}
+                  alt={`Imagem ${index}`}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "200px",
+                    objectFit: "cover",
+                  }}
+                  onClick={() => toggleSelectImage(img)}
+                />
+                {images.some((selectedImage) => selectedImage.url === img.url) && (
+                  <Button
+                    className="image-select-button"
+                    onClick={() => toggleSelectImage(img)}
+                  >
+                    <span className="image-select-count">{selectedCount}</span>
+                    Imagem Selecionada
+                  </Button>
+                )}
               </CardContent>
-              <CardActions>
-                <Button variant="contained" color="secondary" onClick={() => handleDeleteImage(img)}>
-                  Excluir
-                </Button>
-              </CardActions>
             </Card>
           </Grid>
         ))}
       </Grid>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={toggleSelectAll}
+        style={{ marginTop: "20px", marginRight: '20px' }}
+      >
+        Selecionar Tudo
+        <SelectAllIcon style={{marginLeft: '10px'}}/>
+      </Button>
+      {showDeleteButton && (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={deleteSelectedImages}
+          style={{ marginTop: "20px" }}
+        >
+          Excluir Selecionadas ({selectedCount})
+          <DeleteForeverIcon style={{marginLeft: '10px'}}/>
+        </Button>
+      )}
       <Dialog open={openDeleteDialog}>
-        <DialogTitle style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Confirmar Exclusão <ReportGmailerrorredIcon style={{ marginLeft: '5px', fontSize: '30px' }} /></DialogTitle>
+        <DialogTitle
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          Confirmar Exclusão{" "}
+          <ReportGmailerrorredIcon
+            style={{ marginLeft: "5px", fontSize: "30px" }}
+          />
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>Tem certeza de que deseja excluir esta imagem? </DialogContentText>
+          <DialogContentText>
+            Tem certeza de que deseja excluir esta imagem?{" "}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDeleteDialog} color="secondary">
@@ -267,7 +441,15 @@ function AdminPage() {
         </DialogActions>
       </Dialog>
       <Dialog open={openUploadDialog}>
-        <DialogTitle style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Status do Upload <BackupIcon style={{ marginLeft: '5px' }} /></DialogTitle>
+        <DialogTitle
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          Status do Upload <BackupIcon style={{ marginLeft: "5px" }} />
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>{uploadStatus}</DialogContentText>
         </DialogContent>

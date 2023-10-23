@@ -259,6 +259,12 @@ min-width: 100px;
   margin-bottom: 50px;
 }
 
+.title-map {
+  font-size: 48px;
+  font-family: roboto, sans-serif!important;
+  margin-bottom: 20px;
+}
+
 /* NavBar */
 
 /* Navbar.css */
@@ -490,6 +496,11 @@ min-width: 100px;
   margin-bottom: 20px;
 }
 
+.title-map {
+  font-size: 36px;
+  font-family: roboto, sans-serif!important;
+  margin-bottom: 20px;
+}
   .form {
     max-width: 600px; /* Reduz a largura do formulário */
   }
