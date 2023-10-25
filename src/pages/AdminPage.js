@@ -37,6 +37,8 @@ import {
 
 import UserModal from "../components/UserModal";
 import LogoutButton from "../components/LogoutButton";
+import AdminPrice from "../components/AdminPrice";
+import FooterAdmin from "../components/FooterAdmin";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
@@ -248,7 +250,7 @@ function AdminPage() {
   };
 
   return (
-    <Container>
+    <Container >
       <Button
         variant="contained"
         color="primary"
@@ -312,6 +314,9 @@ function AdminPage() {
             </CardActions>
           </Card>
         </Grid>
+
+        <AdminPrice/>
+
         <Grid item xs={12} sm={12}>
           <Card>
             <CardContent>
@@ -413,6 +418,8 @@ function AdminPage() {
           <DeleteForeverIcon style={{marginLeft: '10px'}}/>
         </Button>
       )}
+
+
       <Dialog open={openDeleteDialog}>
         <DialogTitle
           style={{

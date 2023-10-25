@@ -19,7 +19,7 @@ body {
 }
 
 p {
-  color: var(--cinza);
+  color: var(--cinza)!important;
 }
 
 .Container {
@@ -189,6 +189,14 @@ li, ul {
   flex-direction: column;
   color: #FFF;
   padding: 20px;
+}
+
+.title-price {
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 48px;
+  margin-top: 25px;
+  margin-bottom: 15px;
 }
 
 .title{
@@ -487,6 +495,13 @@ min-width: 100px;
     margin-bottom: 10px; /* Reduz a margem inferior */
   }
 
+  .title-price {
+    text-align: center;
+    font-family: roboto, sans-serif!important;
+    font-size: 36px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+  }
   
 .title-feedback {
   text-align: center;
@@ -531,3 +546,19 @@ min-width: 100px;
     top: 80px; /* Ajuste a altura conforme necessário */
   }
 }
+
+/* Scrol bar */
+
+  ::-webkit-scrollbar {
+    width: 6px;  /* Largura do scroll vertical */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--azul-claro);  /* Cor da thumb (alça) do scroll */
+    border-radius: 6px; /* Borda arredondada para a thumb */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--button);  /* Cor da thumb do scroll ao passar o mouse */
+  }
+

@@ -9,6 +9,7 @@ import BackToTop from '../components/BackToTop'
 import Maps from '../components/Maps'
 import Feedback from '../components/Feedback'
 import Footer from '../components/Footer'
+import Price from '../components/Price'
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <BackToTop/>
       <Servicos/>
       <Trabalhos/>
+      <Price/>
       <Feedback/>
       <Contato/>
       <Maps/>

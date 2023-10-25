@@ -61,7 +61,7 @@ export default function App() {
             Links úteis
             </Typography>
             <Typography variant="body2">
-              <Link href="#">Preços</Link>
+              <Link href="#price">Preços</Link>
             </Typography>
             <Typography variant="body2">
               <Link href="https://sites.appbarber.com.br/barbeariadoweve-dtvx">Agendar</Link>
