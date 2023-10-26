@@ -419,6 +419,7 @@ function AdminPage() {
         </Button>
       )}
 
+        <FooterAdmin/>
 
       <Dialog open={openDeleteDialog}>
         <DialogTitle

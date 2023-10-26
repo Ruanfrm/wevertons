@@ -41,9 +41,9 @@ const Price = () => {
   return (
     <div id='price'>
       <h4 variant='h4' className='title-price'>Preços</h4>
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
         {prices.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid item xs={6} sm={6} md={2} key={index}>
             <ListItem>
               <ListItemIcon>
                 <img src={item.icon} style={{ width: '40px' }} alt='Ícone de barbearia' />
