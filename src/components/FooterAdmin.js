@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Link, IconButton, Popover, TextField, Button } from '@mui/material';
+import { Container, Grid, Typography, Link, IconButton, Popover, TextField, Button, Tooltip } from '@mui/material';
 import { Facebook, Twitter, Instagram, LinkedIn } from '@mui/icons-material';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
-
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EditIcon from '@mui/icons-material/Edit';
 const firebaseConfig = {
     apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
     authDomain: "cardapiovirtual-d2d6b.firebaseapp.com",
@@ -34,10 +37,11 @@ export default function FooterAdmin() {
       { label: 'Bar', link: '#servicos' },
     ],
     usefulLinks: [
-      { label: 'Preços', link: '#price' },
+      { label: 'Termos de uso', link: '/termos' },
       { label: 'Agendar', link: 'https://sites.appbarber.com.br/barbeariadoweve-dtvx' },
       { label: 'Elogios', link: '#' },
       { label: 'Ajuda', link: '#' },
+
     ],
     contact: {
       address: 'Tv. José Pessoa de Queirós - Centro, Ereré - CE, 63470-000',
@@ -45,7 +49,7 @@ export default function FooterAdmin() {
       phone: '+01 234 567 88',
       fax: '+01 234 567 89',
     },
-    copyright: '&copy; 2023 Todos os direitos reservados, Weverton\'s Barber-Shop',
+    copyright: '© 2023 Todos os direitos reservados, Weverton\'s Barber-Shop',
   });
 
   const [editItem, setEditItem] = useState(null);
@@ -111,26 +115,26 @@ export default function FooterAdmin() {
 
   return (
     <footer>
-      <Container>
+       <Container>
         <Grid
           container
           justifyContent="space-between"
           alignItems="center"
           style={{ padding: "1rem 0", borderBottom: "1px solid #ccc" }}
         >
-          {/* Redes Sociais */}
           <Grid item xs={12} lg={6}>
             <Typography
               variant="body1"
               display="inline"
-              style={{ marginRight: "1rem" }}
+              style={{ marginRight: ".5rem" }}
             >
               Conecte-se conosco nas redes sociais:
             </Typography>
             {footerData.socialLinks
               ? footerData.socialLinks.map((socialLink, index) => (
-                  <div key={index}>
+                <Tooltip title={socialLink.url}>
                     <IconButton
+                    key={index}
                       onClick={() =>
                         openEditModal(
                           { type: "socialLink", platform: socialLink.platform },
@@ -138,31 +142,36 @@ export default function FooterAdmin() {
                         )
                       }
                     >
+                      
                       {getIconComponentForPlatform(socialLink.platform)}
+                      <EditIcon fontSize='10px' style={{color: '#fff'}}/>
                     </IconButton>
-                    <Link href={socialLink.url}>{socialLink.url}</Link>
-                  </div>
+                    </Tooltip>
                 ))
               : null}
           </Grid>
+        </Grid>
 
-          {/* Sobre a Empresa */}
+        <Grid container spacing={4} style={{ paddingTop: "2rem" }}>
           <Grid item xs={12} sm={6} lg={3}>
             <Typography variant="h6" gutterBottom>
-              Sobre a Empresa
+              Weverton's Barber-Shop
             </Typography>
             <Typography variant="body2">
               <Link
                 onClick={() =>
                   openEditModal({ type: "aboutUs" }, footerData.aboutUs)
                 }
+                style={{textDecoration:'none'}}
               >
+                <Tooltip title="Editar">
+              <EditIcon fontSize='large' style={{color: '#fff'}}/>
+                </Tooltip>
                 {footerData.aboutUs || 'Adicionar texto'}
               </Link>
-            </Typography>
-          </Grid>
 
-          {/* Serviços */}
+            </Typography>         
+             </Grid>
           <Grid item xs={12} sm={6} lg={3}>
             <Typography variant="h6" gutterBottom>
               Serviços
@@ -176,17 +185,19 @@ export default function FooterAdmin() {
                       service.link
                     )
                   }
+                  style={{textDecoration: 'none'}}
                 >
+                  <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff'}}/>
+                </Tooltip>
                   {service.label}
                 </Link>
               </Typography>
             ))}
           </Grid>
-
-          {/* Links Úteis */}
           <Grid item xs={12} sm={6} lg={3}>
             <Typography variant="h6" gutterBottom>
-              Links Úteis
+              Links úteis
             </Typography>
             {footerData.usefulLinks.map((usefulLink, index) => (
               <Typography variant="body2" key={index}>
@@ -197,19 +208,24 @@ export default function FooterAdmin() {
                       usefulLink.link
                     )
                   }
+                  style={{textDecoration: 'none'}}
+
                 >
+                   <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff'}}/>
+                </Tooltip>
                   {usefulLink.label}
                 </Link>
               </Typography>
             ))}
           </Grid>
-
-          {/* Contato */}
           <Grid item xs={12} sm={6} lg={3}>
             <Typography variant="h6" gutterBottom>
               Contato
             </Typography>
+            
             <Typography variant="body2">
+
               <Link
                 onClick={() =>
                   openEditModal(
@@ -217,11 +233,17 @@ export default function FooterAdmin() {
                     footerData.contact.address
                   )
                 }
+                style={{textDecoration: 'none'}}
+
               >
                 {footerData.contact.address}
+                <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff', marginLeft: '10px'}}/>
+                </Tooltip>
               </Link>
             </Typography>
             <Typography variant="body2">
+            
               <Link
                 onClick={() =>
                   openEditModal(
@@ -229,11 +251,16 @@ export default function FooterAdmin() {
                     footerData.contact.email
                   )
                 }
+                style={{textDecoration: 'none'}}
+
               >
                 {footerData.contact.email}
+                <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff', marginLeft: '10px'}}/>
+                </Tooltip>
               </Link>
             </Typography>
-            <Typography variant="body2">
+            <Typography variant="body2" >
               <Link
                 onClick={() =>
                   openEditModal(
@@ -241,13 +268,18 @@ export default function FooterAdmin() {
                     footerData.contact.phone
                   )
                 }
+                style={{textDecoration: 'none'}}
+
               >
                 {footerData.contact.phone}
+                <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff', marginLeft: '10px'}}/>
+                </Tooltip>
               </Link>
             </Typography>
-            
           </Grid>
         </Grid>
+
         <div
           style={{
             backgroundColor: "rgba(0, 0, 0, 0.05)",
@@ -260,13 +292,19 @@ export default function FooterAdmin() {
               onClick={() =>
                 openEditModal({ type: "copyright" }, footerData.copyright)
               }
+              style={{textDecoration: 'none'}}
+
             >
               {footerData.copyright}
+              <Tooltip title="Editar">
+              <EditIcon fontSize='small' style={{color: '#fff', marginLeft: '10px'}}/>
+                </Tooltip>
             </Link>
           </Typography>
         </div>
-      </Container>
-      {/* Modal de Edição */}
+
+
+        {/* Modal de Edição */}
       <Popover
   open={editItem !== null}
   anchorEl={editItem !== null ? document.body : null}
@@ -294,7 +332,7 @@ export default function FooterAdmin() {
     <Button onClick={closeEditModal}>Cancelar</Button>
   </div>
 </Popover>
-
+      </Container>
     </footer>
   );
 }

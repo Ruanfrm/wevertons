@@ -12,6 +12,8 @@ import Config from './pages/config/Config'
 import AdminPage from './pages/AdminPage';
 import Login from "./pages/Login"
 import Privete from './routes/privete';
+import Termos from "./pages/Termos"
+import Faq from './pages/Faq';
 
 
 const router = createBrowserRouter([
@@ -21,7 +23,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/config",
-    element: <Config/>,
+    element:  <Privete><Config/></Privete>,
+  },
+  {
+    path: "/termos",
+    element:  <Termos/>,
+  },
+  {
+    path: "/faq",
+    element:  <Faq/>,
   },
   {
     path: "/adm",
