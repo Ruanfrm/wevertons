@@ -12,8 +12,7 @@ const LogoutButton = () => {
   };
 
   return (
-    <Button variant="contained" color="primary" onClick={handleLogout}>
-      Sair da conta
+    <Button color="inherit" style={{ marginRight: '1rem' }} onClick={handleLogout}>
     <LogoutIcon style={{marginLeft: '10px'}}/>
     </Button>
   );

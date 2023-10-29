@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import UserList from "../components/UserList"; // Importe o componente UserList
+import UserListModal from "../components/UserListModal"; // Certifique-se de importar o componente UserListModal
+
 import { useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -39,6 +42,7 @@ import UserModal from "../components/UserModal";
 import LogoutButton from "../components/LogoutButton";
 import AdminPrice from "../components/AdminPrice";
 import FooterAdmin from "../components/FooterAdmin";
+import NavbarAdmin from "../components/NavBarAdmin";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
@@ -67,14 +71,18 @@ function AdminPage() {
   const [selectAll, setSelectAll] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false); // State to show/hide delete button
   const [selectedCount, setSelectedCount] = useState(0); // State to track selected image count
+  const [showUserListModal, setShowUserListModal] = useState(false);
+
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
 
-  const [user, setUser] = useState(null);
-  const [openUserModal, setOpenUserModal] = useState(false);
+
+  
 
   const navigate = useNavigate();
+
+
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -82,6 +90,8 @@ function AdminPage() {
       navigate("/login");
       return;
     }
+
+  
 
     const missionValuesRef = dbRef(db, "mission_values");
     onDbValue(missionValuesRef, (snapshot) => {
@@ -251,17 +261,8 @@ function AdminPage() {
 
   return (
     <Container >
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setOpenUserModal(true)}
-        style={{ margin: "30px 10px" }}
-      >
-        Adicionar Usuário
-        <PersonAddIcon style={{ marginLeft: "10px" }} />
-      </Button>
-      <LogoutButton />
-      <UserModal open={openUserModal} onClose={() => setOpenUserModal(false)} />
+      <NavbarAdmin/>
+      
       <Typography
         variant="h4"
         align="center"

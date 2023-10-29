@@ -1,171 +1,124 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../services/conectionfirebase';
+import UserListModal from '../components/UserListModal';
+import UserModal from './UserModal';
+import LogoutButton from './LogoutButton';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+function NavBarAdmin() {
+  const [optionsVisible, setOptionsVisible] = useState(false);
+  const [showUserListModal, setShowUserListModal] = useState(false);
+  const [openUserModal, setOpenUserModal] = useState(false);
+  const [user, setUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(''); // Estado para armazenar a URL do avatar
+  const [name, setName ] = useState('');
 
-function NavBarAdmin({ user }) {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+  const handleToggleUserListModal = () => {
+    setShowUserListModal(!showUserListModal);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const toggleOptions = () => {
+    setOptionsVisible(!optionsVisible);
   };
+
+  // Função para buscar o usuário autenticado
+  const fetchAuthenticatedUser = () => {
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      // O usuário está autenticado
+      setUser(currentUser);
+      // Agora, vamos buscar a URL do avatar com base no UID do usuário no Firestore
+      fetchAvatarUrl(currentUser.uid);
+    } else {
+      // O usuário não está autenticado
+      setUser(null);
+    }
+  };
+
+  // Função para buscar a URL do avatar com base no "userId" do usuário no Firestore
+  const fetchAvatarUrl = (userId) => {
+    const usersCollectionRef = collection(db, 'users');
+
+    const q = query(usersCollectionRef, where('userId', '==', userId));
+
+    getDocs(q)
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          const userData = doc.data();
+          setAvatarUrl(userData.avatar || 'https://th.bing.com/th/id/OIP.8t1WtYLAPVB189hu7pCP3gHaHa?pid=ImgDet&rs=1');
+          setName(userData.name || "Usuario não identificado")
+
+        } else {
+          setAvatarUrl('https://th.bing.com/th/id/OIP.8t1WtYLAPVB189hu7pCP3gHaHa?pid=ImgDet&rs=1');
+        }
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar a URL do avatar:', error);
+      });
+  };
+
+  useEffect(() => {
+    fetchAuthenticatedUser();
+  }, []);
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
+      <Toolbar>
+        <IconButton color="inherit" aria-label="Menu" style={{ marginRight: '1rem' }}>
+          <MenuIcon onClick={toggleOptions} />
+        </IconButton>
+        <Typography variant="h6" style={{ flexGrow: 1 }}>
+          Werverton's
+        </Typography>
+        {optionsVisible && (
+          <div>
+            <Button color="inherit" style={{ marginRight: '1rem' }} onClick={() => setOpenUserModal(true)}>
+            <PersonAddAltIcon style={{ marginRight: "10px" }} />
+            Adicionar Usuário
+            </Button>
+            <Button
+            color="inherit" style={{ marginRight: '1rem' }}
+            onClick={handleToggleUserListModal}
+      >
+        {showUserListModal ? "Fechar Lista de Usuários" : "Listar Usuários"}
+      </Button>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
+      <UserListModal
+        open={showUserListModal}
+        onClose={handleToggleUserListModal}
+      />
+            <LogoutButton />
+            <UserModal open={openUserModal} onClose={() => setOpenUserModal(false)} />
+
+          </div>
+        )}
+        {user ? (
+          <div>
+            <Button color="inherit" style={{ marginRight: '1rem' }}>
+              {name}
+            </Button>
+            
+            <IconButton color="inherit" style={{ marginRight: '1rem' }}>
+              <img src={avatarUrl}  style={{width: '30px', borderRadius: '50px'}}/>
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {user && (
-                <>
-                  <MenuItem>
-                    <Typography>{user.name}</Typography>
-                  </MenuItem>
-                  <MenuItem>
-                    <Typography>{user.email}</Typography>
-                  </MenuItem>
-                </>
-              )}
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
+            
+          </div>
+        ) : (
+          <IconButton color="inherit" style={{ marginRight: '1rem' }}>
+            <AccountCircleIcon />
+          </IconButton>
+        )}
+      </Toolbar>
     </AppBar>
   );
 }
