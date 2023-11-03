@@ -10,6 +10,7 @@ import Maps from '../components/Maps'
 import Feedback from '../components/Feedback'
 import Footer from '../components/Footer'
 import Price from '../components/Price'
+import BarberList from '../components/BarberList'
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <Agendar />
       <BackToTop/>
       <Servicos/>
+      <BarberList/>
       <Trabalhos/>
       <Price/>
       <Feedback/>

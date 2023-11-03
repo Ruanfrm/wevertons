@@ -43,6 +43,7 @@ import LogoutButton from "../components/LogoutButton";
 import AdminPrice from "../components/AdminPrice";
 import FooterAdmin from "../components/FooterAdmin";
 import NavbarAdmin from "../components/NavBarAdmin";
+import BarbersAdmin from "../components/BarbersAdmin";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
@@ -316,6 +317,7 @@ function AdminPage() {
           </Card>
         </Grid>
 
+        <BarbersAdmin/>
         <AdminPrice/>
 
         <Grid item xs={12} sm={12}>

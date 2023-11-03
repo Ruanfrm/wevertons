@@ -425,6 +425,15 @@ min-width: 100px;
     flex-direction: column; /* Altera a direção da flexbox para coluna */
   }
 
+  .title{
+    margin-bottom: 14px;
+    text-align: center;
+    font-family: roboto, sans-serif!important;
+    font-size: 36px!important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .missao, .valores {
     margin: 10px 0; /* Espaçamento vertical para os parágrafos */
     text-align: center;
@@ -563,3 +572,44 @@ min-width: 100px;
     background: var(--button);  /* Cor da thumb do scroll ao passar o mouse */
   }
 
+
+
+  /* barbeiros card */
+
+/* styles.css */
+.barber-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.barber-card {
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0px 4px 6px 6px rgba(49, 93, 214, 0.2);
+  width: 100px; /* Largura máxima do card */
+  flex: 1; /* Distribui igualmente o espaço entre os cards */
+}
+
+.barber-image {
+  width: 150px; /* Largura da imagem */
+  height: 150px; /* Altura da imagem */
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.barber-name {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .barber-card {
+    width: 100%; /* Largura total em telas menores */
+  }
+}
