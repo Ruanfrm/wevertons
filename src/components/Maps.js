@@ -3,7 +3,7 @@ import Iframe from 'react-iframe';
 import MapIcon from '@mui/icons-material/Map';
 const MapComponent = () => {
   return (
-    <div>
+    <div id='maps'>
         <h1 className='title-map' style={{textAlign: 'center'}}>
             Como chegar?
             <MapIcon fontSize='large' style={{marginLeft: '10px'}}/>

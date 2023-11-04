@@ -21,11 +21,10 @@ function Navbar() {
       </div>
       <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
         <ul>
-          <li><a href="https://sites.appbarber.com.br/barbeariadoweve-dtvx" target='_blan'>Agendar</a></li>
+          <li><a href="https://sites.appbarber.com.br/barbeariadoweve-dtvx" target='_blank'>Agendar</a></li>
           <li><a href="#trabalhos">Trabalhos</a></li>
           <li><a href="#servicos">Serviços</a></li>
-          <li><a href="#contato">Contato</a></li>
-          <li><a href="#feedback">Avaliações</a></li>
+          <li><a href="#maps">Como chegar?</a></li>
 
         </ul>
       </div>

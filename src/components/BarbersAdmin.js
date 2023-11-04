@@ -23,6 +23,8 @@ import { Realtime } from '../services/conectionfirebase';
 import { getDatabase, ref, push, get, child, update, remove } from 'firebase/database';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const BarbersAdmin = () => {
   const [name, setName] = useState('');
@@ -192,6 +194,8 @@ const BarbersAdmin = () => {
     }
   };
 
+  
+
   return (
     <Container sx={{ background: 'white', marginLeft: '25px', borderRadius: '10px', color: 'black', marginTop: '20px' }}  >
       <Typography variant="h4" align="center" gutterBottom fontWeight='bold'>
@@ -221,11 +225,12 @@ const BarbersAdmin = () => {
           </>
         ) : (
           <Button variant="contained" color="primary" onClick={handleAddBarber}>
+          <AddIcon style={{marginRight: '10px'}}/>
             Adicionar Barbeiro
           </Button>
         )}
       </Box>
-      <TableContainer>
+      <TableContainer style={{ maxHeight: '600px', overflowY: 'auto'}}>
         <Table>
           <TableHead>
             <TableRow>
@@ -234,9 +239,9 @@ const BarbersAdmin = () => {
               <TableCell>Ações</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody >
             {barbers.map((barber) => (
-              <TableRow key={barber.id}>
+              <TableRow key={barber.id} >
                 <TableCell>{barber.name}</TableCell>
                 <TableCell>{barber.imageSrc}</TableCell>
                 <TableCell>

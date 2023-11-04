@@ -106,6 +106,10 @@ const AdminPrice = () => {
       setSuccess('Serviço editado com sucesso.');
       clearFields();
       setEditServiceKey(null);
+
+      setServiceName('');
+      setServicePrice('');
+
     }
   };
 
@@ -132,6 +136,12 @@ const AdminPrice = () => {
     setServicePrice(price);
   };
 
+  const handleCancelEdit = () => {
+    setEditServiceKey(null)
+    setServiceName('');
+    setServicePrice('');
+  };
+
   return (
     <Container style={{ background: '#fff', padding: '20px', borderRadius: '8px', marginTop: '20px', marginLeft:'25px'}}>
       <Typography variant="h4" align="center" gutterBottom style={{color: '#000', fontWeight: 'bold'}}>
@@ -154,18 +164,18 @@ const AdminPrice = () => {
           {editServiceKey ? (
             <>
               <Button variant="contained" onClick={handleEditService} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <EditIcon style={{marginRight: '10px'}}/>
                 Editar Serviço
-                <EditIcon style={{marginLeft: '10px'}}/>
               </Button>
-              <Button variant="contained" onClick={() => setEditServiceKey(null)} style={{marginLeft: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <Button variant="contained" onClick={handleCancelEdit} style={{marginLeft: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <CancelIcon style={{marginRight: '10px'}}/>
                 Cancelar Edição
-                <CancelIcon style={{marginLeft: '10px'}}/>
               </Button>
             </>
           ) : (
             <Button variant="contained" onClick={handleAddService}  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <AddIcon style={{marginRight: '10px'}}/>
               Adicionar Serviço
-              <AddIcon style={{marginLeft: '10px'}}/>
             </Button>
           )}
         </ButtonGroup>
@@ -180,14 +190,14 @@ const AdminPrice = () => {
                   <Button variant="outlined" onClick={() => handleEditClick(service.key, service.service, service.price)} 
                   style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
                   >
+                    <EditIcon style={{marginRight: '10px'}}/>
                     Editar
-                    <EditIcon style={{marginLeft: '10px'}}/>
                   </Button>
                   <Button variant="outlined" onClick={() => handleDeleteService(service.key)}
                   style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
                   >
+                    <DeleteForeverIcon style={{marginRight: '10px'}}/>
                     Excluir
-                    <DeleteForeverIcon style={{marginLeft: '10px'}}/>
                   </Button>
                 </ButtonGroup>
               </ListItem>

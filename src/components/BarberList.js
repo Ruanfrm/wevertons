@@ -17,6 +17,7 @@ const BarberList = () => {
           const barberArray = Object.values(data);
 
           setBarbers(barberArray);
+
         }
       } catch (error) {
         console.error('Erro ao carregar barbeiros:', error);
