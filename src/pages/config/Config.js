@@ -34,6 +34,7 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { isValid, format } from "date-fns";
 import Tooltip from "@mui/material/Tooltip";
+import UndoIcon from "@mui/icons-material/Undo";
 
 const taskListStyle = {
   maxWidth: "800px",
@@ -65,7 +66,6 @@ const listItemTextStyle = {
 const DEFAULT_TASK_CATEGORY = "Personal";
 const DEFAULT_TASK_PRIORITY = "Medium";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyAUYHcoYtrwXJNiXQIDhkI9eTZ2qm44caw",
   authDomain: "cardapiovirtual-d2d6b.firebaseapp.com",
@@ -76,9 +76,11 @@ const firebaseConfig = {
   appId: "1:173010671308:web:15fd5e2dea8851860a9469"
 };
 
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 function Config() {
   const [tasks, setTasks] = useState([]);
-  const [completedTasks, setCompletedTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [taskDateTime, setTaskDateTime] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -95,9 +97,11 @@ function Config() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [editTask, setEditTask] = useState(null);
+  const [completedTasks, setCompletedTasks] = useState([]);
 
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
+  // Defina TASK_HISTORY_COLLECTION no início do seu arquivo, onde as outras constantes estão definidas
+  const TASK_HISTORY_COLLECTION = "tarefasconcluidas";
+
 
   useEffect(() => {
     const tasksRef = ref(database, "/tasks");
@@ -107,8 +111,16 @@ function Config() {
       if (tasksData) {
         const tasksArray = Object.values(tasksData);
         setTasks(tasksArray);
+        localStorage.setItem("tasks", JSON.stringify(tasksArray));
       }
     });
+  }, [database]);
+
+  useEffect(() => {
+    const localTasks = localStorage.getItem("tasks");
+    if (localTasks) {
+      setTasks(JSON.parse(localTasks));
+    }
   }, []);
 
   const addTaskToFirebase = (taskData) => {
@@ -131,20 +143,41 @@ function Config() {
     });
   };
 
+// Função para carregar tarefas concluídas do Firebase
+const loadCompletedTasksFromFirebase = () => {
+  const completedTasksRef = ref(database, "tarefasconcluidas");
+
+  // Use onValue para ouvir alterações no nó "completed-tasks"
+  onValue(completedTasksRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const completedTaskList = Object.values(data);
+      setCompletedTasks(completedTaskList);
+    } else {
+      setCompletedTasks([]);
+    }
+  });
+};
+
+
+
   useEffect(() => {
     loadTasksFromFirebase();
+    loadCompletedTasksFromFirebase();
   }, []);
 
   const addTask = () => {
     if (editing) {
       if (newTaskContent.trim() !== "") {
         const updatedTasks = [...tasks];
-        updatedTasks[editIndex] = {
+        const editedTask = {
           task: newTaskContent,
           dateTime: editDateTime,
           category: taskCategory,
           priority: taskPriority,
+          id: tasks[editIndex].id,
         };
+        updatedTasks[editIndex] = editedTask;
         setTasks(updatedTasks);
         setEditing(false);
         setEditIndex(null);
@@ -152,13 +185,8 @@ function Config() {
         setEditDateTime("");
         setTaskCategory(DEFAULT_TASK_CATEGORY);
         setTaskPriority(DEFAULT_TASK_PRIORITY);
-        const taskRef = ref(database, `tasks/${tasks[editIndex].id}`);
-        set(taskRef, {
-          task: newTaskContent,
-          dateTime: editDateTime,
-          category: taskCategory,
-          priority: taskPriority,
-        });
+        const taskRef = ref(database, `tasks/${editedTask.id}`);
+        set(taskRef, editedTask);
       }
     } else {
       if (newTask.trim() !== "") {
@@ -168,12 +196,17 @@ function Config() {
           category: taskCategory,
           priority: taskPriority,
         };
-        setTasks([...tasks, newTaskData]);
-        setNewTask("");
-        setTaskDateTime("");
-        setTaskCategory(DEFAULT_TASK_CATEGORY);
-        setTaskPriority(DEFAULT_TASK_PRIORITY);
-        addTaskToFirebase(newTaskData);
+
+        if (isValid(new Date(taskDateTime))) {
+          setTasks([...tasks, newTaskData]);
+          setNewTask("");
+          setTaskDateTime("");
+          setTaskCategory(DEFAULT_TASK_CATEGORY);
+          setTaskPriority(DEFAULT_TASK_PRIORITY);
+          addTaskToFirebase(newTaskData);
+        } else {
+          console.error("Data inválida");
+        }
       }
     }
   };
@@ -199,45 +232,67 @@ function Config() {
   };
 
   const startEdit = (task) => {
-    setEditTask(task);
     setNewTaskContent(task.task);
     setEditDateTime(task.dateTime);
     setTaskCategory(task.category);
     setTaskPriority(task.priority);
-    setEditIndex(tasks.indexOf(task));
+    setEditIndex(tasks.findIndex((t) => t.id === task.id));
     setEditing(true);
   };
 
   const completeTask = (index) => {
     const updatedTasks = [...tasks];
     const completedTask = updatedTasks.splice(index, 1);
-    setTasks(updatedTasks);
-    setCompletedTasks([...completedTasks, ...completedTask]);
-    const completedTaskRef = ref(database, "completed-tasks");
-    push(completedTaskRef, completedTask[0]);
+  
+    const taskRef = ref(database, `tasks/${completedTask[0].id}`);
+    remove(taskRef)
+      .then(() => {
+        console.log("Tarefa removida com sucesso do nó de tarefas");
+      })
+      .catch((error) => {
+        console.error("Erro ao remover a tarefa do nó de tarefas:", error);
+      });
+  
+    const completedTaskRef = ref(database, "tarefasconcluidas");
+    completedTask.forEach((task) => {
+      push(completedTaskRef, task)
+        .then(() => {
+          console.log("Tarefa adicionada com sucesso ao histórico");
+          // Após adicionar a tarefa concluída, recarregue as tarefas concluídas
+          loadCompletedTasksFromFirebase();
+        })
+        .catch((error) => {
+          console.error("Erro ao adicionar a tarefa ao histórico:", error);
+        });
+    });
   };
-
+  
+  const reactivateTask = (taskId) => {
+    const completedTask = completedTasks.find((task) => task.id === taskId);
+  
+    if (completedTask) {
+      // Adicione a tarefa de volta à lista de tarefas ativas
+      const taskRef = ref(database, `tasks/`);
+      push(taskRef, { ...completedTask, id: taskId })
+        .then(() => {
+          console.log("Tarefa reativada com sucesso");
+          // Recarregue as tarefas ativas e concluídas
+          loadTasksFromFirebase();
+          loadCompletedTasksFromFirebase();
+        })
+        .catch((error) => {
+          console.error("Erro ao reativar a tarefa:", error);
+        });
+    } else {
+      console.error("Tarefa concluída não encontrada");
+    }
+  };
+  
   const closeSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  useEffect(() => {
-    const checkTaskAlerts = () => {
-      tasks.forEach((task) => {
-        const taskDateTime = new Date(task.dateTime);
-        if (isValid(taskDateTime) && taskDateTime <= new Date()) {
-          setSnackbarMessage(`Chegou a hora da sua tarefa: "${task.task}"!`);
-          setSnackbarOpen(true);
-        }
-      });
-    };
 
-    const alertInterval = setInterval(checkTaskAlerts, 1000 * 60); // Verifique a cada minuto
-
-    return () => {
-      clearInterval(alertInterval);
-    };
-  }, [tasks]);
 
   return (
     <Container style={taskListStyle}>
@@ -343,11 +398,11 @@ function Config() {
       </FormControl>
       <List>
         {tasks
-          .filter((task) => {
+           .filter((task) => {
             if (filter === "All") return true;
             return task.priority === filter;
           })
-          .filter((task) => task.task.includes(search))
+          .filter((task) => task.task && task.task.includes(search))
           .map((task, index) => (
             <ListItem key={task.id || index} style={listItemStyle}>
               <ListItemText
@@ -405,69 +460,73 @@ function Config() {
           ))}
       </List>
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-      <DialogTitle
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          fontSize: "28px",
-        }}
-      >
-        Lembrete de Tarefa{" "}
-        <NotificationsActiveIcon
-          style={{ margin: "0px 10px", fontSize: "larger" }}
-        />
-      </DialogTitle>
-      <DialogContent style={{ fontSize: "20px" }}>
-        <p>Tarefa: {selectedTask?.task}</p>
-        <p>
-          Data e Hora:{" "}
-          {selectedTask
-            ? format(new Date(selectedTask.dateTime), "dd/MM/yyyy HH:mm")
-            : ""}
-        </p>
-      </DialogContent>
+        <DialogTitle
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "28px",
+          }}
+        >
+          Lembrete de Tarefa{" "}
+          <NotificationsActiveIcon
+            style={{ margin: "0px 10px", fontSize: "larger" }}
+          />
+        </DialogTitle>
+        <DialogContent style={{ fontSize: "20px" }}>
+          <p>Tarefa: {selectedTask?.task}</p>
+          <p>
+            Data e Hora:{" "}
+            {selectedTask
+              ? format(new Date(selectedTask.dateTime), "dd/MM/yyyy HH:mm")
+              : ""}
+          </p>
+        </DialogContent>
+    
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)} color="primary">
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    
+ 
+      <Dialog open={historyOpen} onClose={closeHistory} >
+  <DialogTitle>Histórico de Tarefas</DialogTitle>
+  <DialogContent>
+    <List style={{minWidth: '500px'}}>
+      {completedTasks.map((task) => (
+       <ListItem key={task.id} style={listItemStyle}>
+  <ListItemText
+    primary={task.task}
+    secondary={format(new Date(task.dateTime), "dd/MM/yyyy HH:mm")}
+    style={listItemTextStyle}
+  />
+  <ListItemSecondaryAction>
+    <IconButton edge="end" onClick={() => reactivateTask(task.id)}>
+      <UndoIcon />
+    </IconButton>
+  </ListItemSecondaryAction>
+</ListItem>
+      ))}
+    </List>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={closeHistory} color="primary">
+      Fechar
+    </Button>
+  </DialogActions>
+</Dialog>
 
-      <DialogActions>
-        <Button onClick={() => setOpenModal(false)} color="primary">
-          Fechar
-        </Button>
-      </DialogActions>
-    </Dialog>
-
-    <Dialog open={historyOpen} onClose={closeHistory}>
-      <DialogTitle>Histórico de Tarefas</DialogTitle>
-      <DialogContent>
-        <List>
-          {completedTasks.map((task, index) => (
-            <ListItem key={task.id || index} style={listItemStyle}>
-              <ListItemText
-                primary={task.task}
-                secondary={format(
-                  new Date(task.dateTime),
-                  "dd/MM/yyyy HH:mm"
-                )}
-                style={listItemTextStyle}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={closeHistory} color="primary">
-          Fechar
-        </Button>
-      </DialogActions>
-    </Dialog>
-
-    <Snackbar
-      open={snackbarOpen}
-      autoHideDuration={6000}
-      onClose={closeSnackbar}
-      message={snackbarMessage}
-    />
-  </Container>
-  );
-}
-
-export default Config;
+    
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        message={snackbarMessage}
+      />
+    </Container>
+    );
+  }
+  
+export default Config;    
