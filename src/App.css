@@ -1,0 +1,615 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --azul-claro: #3399ff;
+  --button: #2689eb;
+  --branco: #ffffff;
+  --cinza: #939ba5;
+  --background: #141a1f;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--branco);
+  font-family: roboto, sans-serif;
+}
+
+p {
+  color: var(--cinza)!important;
+}
+
+.Container {
+  margin: 0 80px 0 80px;
+}
+
+.home {
+  min-height: 70vh;
+  margin-top: 40px;
+}
+.img-sobre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home h1 {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 100px;
+  }
+
+  .title-container {
+    display: flex; /* Cria um contêiner flexível */
+  }
+
+
+  .missao, .valores {
+    flex: 1; /* Divide o espaço igualmente entre os parágrafos */
+    margin: 10px; /* Espaçamento opcional entre os parágrafos */
+    text-align: center;
+    font-size: 30px;
+  }
+
+.paragrafos-container {
+  display: flex; /* Cria um contêiner flexível */
+}
+
+.paragrafo {
+  flex: 1; /* Divide o espaço igualmente entre os parágrafos */
+  margin: 10px; /* Espaçamento opcional entre os parágrafos */
+  text-align: justify;
+}
+
+.agendar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* About */
+
+.about-container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.about-image img {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.about-content {
+  flex: 1;
+}
+
+.about-content h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.about-content p {
+  font-size: 16px;
+}
+  
+.h1-servise {
+  text-shadow: 1px 1px 10px black;
+  font-size: 50px;
+  text-transform: uppercase;
+}
+
+.servises-section {
+  background-image: url('./imagens/tijolo.jpg');
+  background-color: #010101;
+}
+
+/* Seu CSS */
+.m-4 {
+  margin: 1rem; /* A classe m-4 no Tailwind CSS define uma margem de 1rem. */
+}
+
+.flex {
+  display: flex; /* A classe flex no Tailwind CSS define um display flex. */
+}
+
+.items-center {
+  align-items: center; /* A classe items-center no Tailwind CSS alinha itens verticalmente ao centro. */
+}
+
+.justify-center {
+  justify-content: center; /* A classe justify-center no Tailwind CSS alinha itens horizontalmente ao centro. */
+}
+
+.flex-col {
+  flex-direction: column; /* A classe flex-col no Tailwind CSS define uma direção de coluna para o flex container. */
+}
+
+
+#servicos {
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.card-serviço p {
+  color: #010101;
+  font-size: 20px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.h1-serv {
+  color: var(--branco);
+  font-family: roboto, sans-serif!important;
+  font-size: 48px;
+  text-align: center;
+  padding-top: 2rem;
+  margin-bottom: 4rem;
+}
+
+li, ul {
+  list-style: none;
+}
+
+.pagagrafo-servicos {
+  color: var(--branco)!important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-servicos {
+  margin-right: 25px;
+}
+
+.imagens-container {
+  margin-top: 120px;
+  margin-bottom: 100px;
+
+}
+
+.title-trabalhos {
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 48px;
+}
+
+
+/* contato */
+
+.container-contato{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #FFF;
+  padding: 20px;
+}
+
+.title-price {
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 48px;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+.title{
+  margin-bottom: 14px;
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 48px!important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icone-contato {
+  margin-left: 7px;
+}
+.form{
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input{
+  margin-bottom: 14px;
+  height: 34px;
+  border-radius: 4px;
+  border: 0;
+  padding: 0 8px;
+}
+
+.textarea{
+  margin-bottom: 14px;
+  border-radius: 4px;
+  border: 0;
+  padding: 8px;
+  height: 94px;
+  resize: none;
+}
+
+.button{
+  height: 34px;
+  border-radius: 4px;
+  border: 0;
+  cursor: pointer;
+  background-color: var(--button);
+  font-size: 18px;
+  transition: background-color, transform 0.8s;
+}
+
+.button:hover{
+  background-color: var(--azul-claro);
+  transform: scale(1.01);
+}
+
+.container-alertas {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.image-list {
+min-width: 100px;
+}
+
+.title-servicos {
+  text-align: center;
+  font-size: 48px;
+  font-family: roboto, sans-serif!important;
+  margin-bottom: 50px;
+}
+
+.title-map {
+  font-size: 48px;
+  font-family: roboto, sans-serif!important;
+  margin-bottom: 20px;
+}
+
+/* NavBar */
+
+/* Navbar.css */
+
+/* Estilos gerais da barra de navegação */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--azul-claro);
+  color: #fff;
+  padding: 1px 20px;
+  margin-bottom: 100px;
+}
+
+.navbar-logo img {
+  width: 90px;
+}
+
+.navbar-logo a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Estilos para links na barra de navegação */
+.navbar-links ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  margin: 0;
+}
+
+.navbar-links li {
+  margin-right: 20px;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.navbar-links a:hover {
+  color: #baafaf; /* Cor de destaque ao passar o mouse */
+}
+
+/* Estilos para o ícone do menu responsivo */
+.navbar-toggle {
+  display: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+/* Estilos para o menu suspenso em telas menores */
+@media screen and (max-width: 768px) {
+  .navbar-links {
+    flex-direction: column;
+    position: absolute;
+    top: 60px; /* Ajuste a altura conforme necessário */
+    right: 3;
+    background-color: var(--background);
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s;
+  }
+
+  .navbar-links.active {
+    max-height: 300px; /* Ajuste a altura máxima conforme necessário */
+  }
+
+  .navbar-toggle {
+    display: block;
+  }
+}
+
+.imagens {
+  background: transparent!important;
+  width: 100%;
+}
+/* Estilos para as seções na tela maior */
+.home {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: repeat(2, 1fr); /* Divide em duas colunas */
+  grid-gap: 20px; /* Espaço entre as colunas */
+  margin: 10px;
+  margin-bottom: 50px;
+  margin-top: 50px;
+}
+
+.home p {
+  text-align: justify;
+}
+
+.title-feedback {
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 48px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+
+}
+
+
+
+
+/* Responsividade */
+
+/* Estilos para telas menores (dispositivos móveis) */
+@media screen and (max-width: 768px) {
+  .home {
+    grid-template-columns: 1fr; /* Uma coluna */
+  }
+}
+
+/* Estilos gerais do seu CSS */
+
+/* Estilos para telas menores (dispositivos móveis) */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 16px; /* Reduz o tamanho da fonte para telas menores */
+  }
+
+  .img-sobre {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .img-sobre img {
+    width: 100%;
+  }
+
+  .Container {
+    margin: 0 20px; /* Reduz a margem para telas menores */
+    background-color: transparent!important;
+  }
+
+  .home h1 {
+    font-size: 36px; /* Reduz o tamanho do título */
+    margin-bottom: 60px; /* Reduz a margem inferior do título */
+  }
+
+  .title-container {
+    flex-direction: column; /* Altera a direção da flexbox para coluna */
+  }
+
+  .title{
+    margin-bottom: 14px;
+    text-align: center;
+    font-family: roboto, sans-serif!important;
+    font-size: 36px!important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .missao, .valores {
+    margin: 10px 0; /* Espaçamento vertical para os parágrafos */
+    text-align: center;
+    font-size: 24px; /* Reduz o tamanho dos parágrafos */
+  }
+
+  .paragrafos-container {
+    flex-direction: column; /* Altera a direção da flexbox para coluna */
+  }
+
+  .paragrafo {
+    margin: 10px 0; /* Espaçamento vertical para os parágrafos */
+    text-align: center; /* Centraliza o texto */
+  }
+
+  .about-image img {
+    width: 150px; /* Reduz o tamanho da imagem */
+    height: 150px;
+    margin-right: 10px; /* Reduz o espaço à direita da imagem */
+  }
+
+  .about-content h2 {
+    font-size: 20px; /* Reduz o tamanho do título */
+    margin-bottom: 6px; /* Reduz a margem inferior do título */
+  }
+
+  .about-content p {
+    font-size: 14px; /* Reduz o tamanho do texto */
+  }
+
+  .h1-servise {
+    font-size: 36px; /* Reduz o tamanho do título */
+  }
+
+  .servises-section {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .card-serviço p {
+    font-size: 16px; /* Reduz o tamanho do texto */
+  }
+
+  .h1-serv {
+    font-size: 36px; /* Reduz o tamanho do título */
+    margin-bottom: 2rem; /* Reduz a margem inferior do título */
+  }
+
+  .pagagrafo-servicos {
+    font-size: 16px; /* Reduz o tamanho do texto */
+  }
+
+  .img-servicos {
+    margin-right: 10px; /* Reduz o espaço à direita da imagem */
+  }
+
+  .imagens-container {
+    margin-top: 60px; /* Reduz o espaço superior */
+    margin-bottom: 50px; /* Reduz o espaço inferior */
+  }
+
+  .title-trabalhos {
+    font-size: 36px; /* Reduz o tamanho do título */
+  }
+
+  .title {
+    font-size: 36px; /* Reduz o tamanho do título */
+    margin-bottom: 10px; /* Reduz a margem inferior */
+  }
+
+  .title-price {
+    text-align: center;
+    font-family: roboto, sans-serif!important;
+    font-size: 36px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+  }
+  
+.title-feedback {
+  text-align: center;
+  font-family: roboto, sans-serif!important;
+  font-size: 36px; /* Reduz o tamanho do título */
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.title-map {
+  font-size: 36px;
+  font-family: roboto, sans-serif!important;
+  margin-bottom: 20px;
+}
+  .form {
+    max-width: 600px; /* Reduz a largura do formulário */
+  }
+
+  .input,
+  .textarea {
+    height: 30px; /* Reduz a altura dos campos de entrada */
+    font-size: 14px; /* Reduz o tamanho da fonte nos campos de entrada */
+  }
+
+  .button {
+    height: 30px; /* Reduz a altura do botão */
+    font-size: 16px; /* Reduz o tamanho da fonte no botão */
+  }
+
+  .container-alertas {
+    margin-top: 5px; /* Reduz o espaço superior */
+    margin-bottom: 10px; /* Reduz o espaço inferior */
+  }
+
+  .title-servicos {
+    font-size: 36px; /* Reduz o tamanho do título */
+    margin-bottom: 30px; /* Reduz a margem inferior */
+  }
+
+  /* Estilos para a barra de navegação responsiva */
+  .navbar-links {
+    top: 80px; /* Ajuste a altura conforme necessário */
+  }
+}
+
+/* Scrol bar */
+
+  ::-webkit-scrollbar {
+    width: 6px;  /* Largura do scroll vertical */
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--azul-claro);  /* Cor da thumb (alça) do scroll */
+    border-radius: 6px; /* Borda arredondada para a thumb */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--button);  /* Cor da thumb do scroll ao passar o mouse */
+  }
+
+
+
+  /* barbeiros card */
+
+/* styles.css */
+.barber-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.barber-card {
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0px 4px 6px 6px rgba(49, 93, 214, 0.2);
+  width: 100px; /* Largura máxima do card */
+  flex: 1; /* Distribui igualmente o espaço entre os cards */
+}
+
+.barber-image {
+  width: 150px; /* Largura da imagem */
+  height: 150px; /* Altura da imagem */
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.barber-name {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .barber-card {
+    width: 100%; /* Largura total em telas menores */
+  }
+}
